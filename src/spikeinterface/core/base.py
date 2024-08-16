@@ -93,7 +93,7 @@ class BaseExtractor:
         """
         if ids is None:
             if prefer_slice:
-                indices = slice(None)
+                indices = slice(0,len(self._main_ids))
             else:
                 indices = np.arange(len(self._main_ids))
         else:
