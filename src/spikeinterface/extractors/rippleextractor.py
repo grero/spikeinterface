@@ -1,9 +1,11 @@
 from spikeinterface.core import BaseRecording, BaseRecordingSegment
+from spikeinterface.core.core_tools import define_function_from_class
 from pyns import nsparser
 import glob
 import numpy as np
 
-class RippleExtractor(BaseRecording):
+
+class RippleRecordingExtractor(BaseRecording):
     extractor_name = 'Ripple'
     has_default_locations = False
     mode = 'file'
@@ -27,12 +29,21 @@ class RippleExtractor(BaseRecording):
         recording_segment = RippleRecordingSegment(parser, sampling_frequency, dtype)
         self.add_recording_segment(recording_segment)
 
+    def is_binary_compatible(self):
+        return True
+
+    def get_binary_description(self):
+        return {"time_axis" : 0,
+                "dtype" : self.dtype,
+                "num_channels" : self.get_num_channels()}
+
 
 class RippleRecordingSegment(BaseRecordingSegment):
     def __init__(self, parser, sampling_frequency, dtype):
         BaseRecordingSegment.__init__(self, sampling_frequency = sampling_frequency)
         self.parser = parser 
         self.dtype = dtype
+        self.num_channels = parser.channel_count
 
     def get_num_samples(self):
         return self.parser.n_data_points
@@ -43,7 +54,10 @@ class RippleRecordingSegment(BaseRecordingSegment):
             stop = 1 if channel_indices.stop == None else channel_indices.stop
             step = 1 if channel_indices.step == None else channel_indices.step
             chs = range(start,stop,step)
-            nch = channel_indices.stop - channel_indices.start
+            nch = stop - start
+        elif channel_indices is None:
+            chs = range(self.num_channels) 
+            nchs = self.num_channels
         else:
             chs = channel_indices
             nch = len(channel_indices)
@@ -52,3 +66,4 @@ class RippleRecordingSegment(BaseRecordingSegment):
             buffer[:,i] = self.parser.get_analog_data(ch, start_frame, buffer.shape[0])
         return buffer
 
+read_ripple_recording = define_function_from_class(source_class=RippleRecordingExtractor, name="read_ripple_recording")
