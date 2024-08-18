@@ -29,6 +29,18 @@ class RippleRecordingExtractor(BaseRecording):
         recording_segment = RippleRecordingSegment(parser, sampling_frequency, dtype)
         self.add_recording_segment(recording_segment)
 
+        self._properties['high_freq_corner'] = [ee.high_freq_corner for ee in parser.get_extended_headers()]
+        self._properties['high_freq_order'] = [ee.high_freq_order for ee in parser.get_extended_headers()]
+        self._properties['high_filter_type'] = [ee.high_filter_type for ee in parser.get_extended_headers()]
+        self._properties['low_freq_corner'] = [ee.low_freq_corner for ee in parser.get_extended_headers()]
+        self._properties['low_freq_order'] = [ee.low_freq_order for ee in parser.get_extended_headers()]
+        self._properties['low_filter_type'] = [ee.low_filter_type for ee in parser.get_extended_headers()]
+
+        self._properties['units'] = [ee.units.decode('utf-8').strip('\x00') for ee in parser.get_extended_headers()]
+        self._properties['connector_ID'] = [ee.phys_conn for ee in parser.get_extended_headers()]
+
+
+
     def is_binary_compatible(self):
         return True
 
