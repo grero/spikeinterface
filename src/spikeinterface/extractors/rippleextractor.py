@@ -14,7 +14,7 @@ class RippleRecordingExtractor(BaseRecording):
     def __init__(self):
         ns5files = list(glob.glob('*.ns5'))
         if not ns5files:
-            error("No ripple file sound")
+            raise SystemError("No ripple file found")
         fname = ns5files[0]
         parser = nsparser.ParserFactory(fname)
         sampling_frequency = parser.timestamp_resolution
