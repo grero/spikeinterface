@@ -340,7 +340,7 @@ def apply_curation(
     elif isinstance(sorting_or_analyzer, SortingAnalyzer):
         analyzer = sorting_or_analyzer
         analyzer = analyzer.remove_units(curation_dict["removed_units"])
-        analyzer = analyzer.merge_units(
+        analyzer,  new_unit_ids  = analyzer.merge_units(
             curation_dict["merge_unit_groups"],
             censor_ms=censor_ms,
             merging_mode=merging_mode,
